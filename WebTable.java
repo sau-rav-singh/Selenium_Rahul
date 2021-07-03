@@ -1,8 +1,10 @@
 package com.saurav.UBS;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -19,6 +21,7 @@ public class WebTable {
 		driver.get("file:///C:/Users/singh/Desktop/ubs.html");
 		driver.manage().window().maximize();
 		Map<String, String> continent = new HashMap<>();
+		Map<String, Integer> CountryDeathCount = new HashMap<>();
 		WebElement table = driver.findElement(By.xpath("/html/body/table"));
 		List<WebElement> rowCount = table.findElements(By.tagName("tr"));
 		String beforexpath = "/html/body/table/tbody/tr[";
@@ -32,7 +35,9 @@ public class WebTable {
 			String actualxpath_Continent = beforexpath + i + afterxpath_Continent;
 			String country = table.findElement(By.xpath(actualxpath_Country)).getText();
 			String countryCount = table.findElement(By.xpath(actualxpath_Count)).getText();
+			Integer cc1 = Integer.valueOf(countryCount);
 			String continentName = table.findElement(By.xpath(actualxpath_Continent)).getText();
+			CountryDeathCount.put(country, cc1);
 			boolean containsKey = continent.containsKey(continentName);
 			if (!containsKey) {
 				continent.put(continentName, countryCount);
@@ -45,6 +50,18 @@ public class WebTable {
 			}
 		}
 		System.out.println(continent);
+		System.out.println(CountryDeathCount);
+		int max = Collections.max(CountryDeathCount.values());
+		CountryDeathCount.entrySet().stream().filter(entry -> entry.getValue() == max).map(entry -> entry.getKey())
+				.collect(Collectors.toList());
+		System.out.println(max);
+		for (Map.Entry<String, Integer> m : CountryDeathCount.entrySet()) {
+			int maxCount = (int) m.getValue();
+			if (maxCount == max) {
+				System.out.println(m.getKey() + " " + m.getValue());
+			}
+		}
+
 		driver.close();
 
 	}
